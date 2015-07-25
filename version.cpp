@@ -1,4 +1,3 @@
-#include <cstdio>
 #include <assert.h>
 #include <db_cxx.h>
 

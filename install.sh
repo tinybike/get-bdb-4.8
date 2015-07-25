@@ -17,12 +17,16 @@ CYAN='\033[0;36m'
 NC='\033[0m'
 
 startdir=$(pwd)
+echo -e "\033[0;34mLogging to $startdir/log${NC}"
 
 if [ -n "$1" ]; then
     target=$1/src
 else
     target=$(pwd)
     mkdir -p bdb
+fi
+if [ -f "log" ]; then
+    rm log
 fi
 
 cd "$target"
@@ -44,7 +48,7 @@ if [ ! -d "bdb" ]; then
     mkdir -p bdb
 
     echo -e "${CYAN}  - unpack $bdbtargz -> ${PWD##*/}/bdb${NC}"
-    tar -xvf $startdir/$bdbtargz -C bdb --strip-components=1 > /dev/null 2>&1
+    tar -xvf $startdir/$bdbtargz -C bdb --strip-components=1 >>$startdir/log 2>&1
 
     cd bdb/build_unix
     mkdir -p build
@@ -52,10 +56,10 @@ if [ ! -d "bdb" ]; then
     export BDB_PREFIX=$(pwd)/build
 
     echo -e "${CYAN}  - dist/configure${NC}"
-    ../dist/configure --disable-shared --enable-cxx --with-pic --prefix=$BDB_PREFIX > /dev/null 2>&1
+    ../dist/configure --disable-shared --enable-cxx --with-pic --prefix=$BDB_PREFIX >>$startdir/log 2>&1
 
     echo -e "${CYAN}  - install -> ${PWD##*/}/build${NC}"
-    make install > /dev/null 2>&1
+    make install >>$startdir/log 2>&1
 
     cd ../..
     echo -e "${RED}Done.${NC}"
@@ -80,12 +84,12 @@ if [ -f "$target/../configure.ac" ] || [ -f "$target/../configure.in" ]; then
 
     echo -e "${BLUE}Creating configure script...${NC}"
     if [ ! -f "aclocal.m4" ]; then
-        ./autogen.sh
+        ./autogen.sh >>$startdir/log 2>&1
     fi
-    autoreconf --install --force --prepend-include=${BDB_PREFIX}/include/ > /dev/null 2>&1
+    autoreconf --install --force --prepend-include=${BDB_PREFIX}/include/ >>$startdir/log 2>&1
 
     echo -e "${BLUE}Configuring...${NC}"
-    ./configure CPPFLAGS="-I${BDB_PREFIX}/include/" LDFLAGS="-L${BDB_PREFIX}/lib/" > /dev/null 2>&1
+    ./configure CPPFLAGS="-I${BDB_PREFIX}/include/" LDFLAGS="-L${BDB_PREFIX}/lib/" >>$startdir/log 2>&1
 
     cd "$startdir"
     echo -e "${RED}Done.${NC}"
