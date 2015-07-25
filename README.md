@@ -9,3 +9,9 @@ Usage
     $ ./install.sh /path/to/bitcoin
 
 BDB 4.8 is installed to the `src/bdb` folder in the path specified (in this case, `/path/to/bitcoin/src/bdb`).  If no path is provided, BDB 4.8 installs locally to a new `bdb` folder.
+
+If libtool is installed (and a `configure.ac` or `configure.in` file is present), the script will run `autogen.sh` (if needed), then configure the target directory to use the new BDB path:
+
+    $ autoreconf --install --force --prepend-include=/path/to/bitcoin/src/bdb/build_unix/build/include/
+
+    $ ./configure CPPFLAGS="-I/path/to/bitcoin/src/bdb/build_unix/build/include/" LDFLAGS="-L/path/to/bitcoin/src/bdb/build_unix/build/lib/"

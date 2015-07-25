@@ -54,7 +54,7 @@ if [ ! -d "bdb" ]; then
     echo -e "${CYAN}  - dist/configure${NC}"
     ../dist/configure --disable-shared --enable-cxx --with-pic --prefix=$BDB_PREFIX > /dev/null 2>&1
 
-    echo -e "${CYAN}  - install -> ${PWD##*/}/bdb/build_unix/build${NC}"
+    echo -e "${CYAN}  - install -> ${PWD##*/}/build${NC}"
     make install > /dev/null 2>&1
 
     cd ../..
@@ -64,20 +64,24 @@ else
 
     export BDB_PREFIX=$(pwd)/bdb/build_unix/build
 
-    echo "${RED}Found local Berkeley DB: $BDB_PREFIX${NC}"
+    echo -e "${RED}Found local Berkeley DB: $BDB_PREFIX${NC}"
 
 fi
 
 cd "$startdir"
 
+echo -e "${BLUE}Checking Berkeley DB version...${NC}"
 g++ version.cpp -I${BDB_PREFIX}/include/ -L${BDB_PREFIX}/lib/ -o version
 ./version
 
-if [ -f "$target/configure.ac" ] || [ -f "$target/configure.in" ]; then
+if [ -f "$target/../configure.ac" ] || [ -f "$target/../configure.in" ]; then
 
-    cd "$target"
+    cd "$target/.."
 
     echo -e "${BLUE}Creating configure script...${NC}"
+    if [ ! -f "aclocal.m4" ]; then
+        ./autogen.sh
+    fi
     autoreconf --install --force --prepend-include=${BDB_PREFIX}/include/ > /dev/null 2>&1
 
     echo -e "${BLUE}Configuring...${NC}"
