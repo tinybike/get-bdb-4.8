@@ -23,7 +23,6 @@ if [ -n "$1" ]; then
     target=$1/src
 else
     target=$(pwd)
-    mkdir -p bdb
 fi
 if [ -f "log" ]; then
     rm log
@@ -32,6 +31,8 @@ fi
 cd "$target"
 
 if [ ! -d "bdb" ]; then
+
+    mkdir -p bdb
 
     bdbtargz="bdb-4.8.tar.gz"
 
